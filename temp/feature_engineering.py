@@ -5,8 +5,6 @@ import _pickle as cPickle
 import pandas as pd
 import numpy as np
 import gensim
-#scipy chaiyo kaam garna
-import scipy
 from fuzzywuzzy import fuzz
 from nltk.corpus import stopwords
 from tqdm import tqdm
@@ -35,7 +33,7 @@ def norm_wmd(s1, s2):
 
 
 def sent2vec(s):
-    words = str(s).lower() # .decode('utf-8') ahile kaam lagdaina
+    words = str(s).lower().decode('utf-8')
     words = word_tokenize(words)
     words = [w for w in words if not w in stop_words]
     words = [w for w in words if w.isalpha()]
@@ -79,15 +77,13 @@ norm_model = gensim.models.KeyedVectors.load_word2vec_format('data/GoogleNews-ve
 norm_model.init_sims(replace=True)
 data['norm_wmd'] = data.apply(lambda x: norm_wmd(x['question1'], x['question2']), axis=1)
 
-#question1_vectors = np.zeros((data.shape[0], 300))
-question1_vectors = scipy.sparse.lil_matrix((data.shape[0], 300))
+question1_vectors = np.zeros((data.shape[0], 300))
 error_count = 0
 
 for i, q in tqdm(enumerate(data.question1.values)):
     question1_vectors[i, :] = sent2vec(q)
 
-#question2_vectors  = np.zeros((data.shape[0], 300))
-question2_vectors  = scipy.sparse.lil_matrix((data.shape[0], 300))
+question2_vectors  = np.zeros((data.shape[0], 300))
 for i, q in tqdm(enumerate(data.question2.values)):
     question2_vectors[i, :] = sent2vec(q)
 
