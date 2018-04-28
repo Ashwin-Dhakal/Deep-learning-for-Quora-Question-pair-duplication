@@ -18,8 +18,10 @@ from keras.preprocessing import sequence, text
 data = pd.read_csv('data/quora_duplicate_questions.tsv', sep='\t')
 y = data.is_duplicate.values
 
-tk = text.Tokenizer(nb_words=200000)
+tk = text.Tokenizer(nb_words=200000) #data lai tokenize gareko
 
+#aaba text lai number sequences ma change garne using keras tokenizer
+#pad garne so that the sequence size is of same size
 max_len = 40
 tk.fit_on_texts(list(data.question1.values) + list(data.question2.values.astype(str)))
 x1 = tk.texts_to_sequences(data.question1.values)
@@ -32,6 +34,7 @@ word_index = tk.word_index
 
 ytrain_enc = np_utils.to_categorical(y)
 
+#loading the embedding layer
 embeddings_index = {}
 f = open('data/glove.840B.300d.txt')
 for line in tqdm(f):
@@ -43,6 +46,7 @@ f.close()
 
 print('Found %s word vectors.' % len(embeddings_index))
 
+#grabing the words and making the dictionary
 embedding_matrix = np.zeros((len(word_index) + 1, 300))
 for word, i in tqdm(word_index.items()):
     embedding_vector = embeddings_index.get(word)
@@ -53,6 +57,9 @@ max_features = 200000
 filter_length = 5
 nb_filter = 64
 pool_length = 4
+
+
+#now starting to build the real deep learning model
 
 model = Sequential()
 print('Build model...')
